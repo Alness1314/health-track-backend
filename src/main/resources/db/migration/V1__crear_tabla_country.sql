@@ -1,0 +1,7 @@
+CREATE TABLE country (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR(64) NOT NULL,
+    create_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    update_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    erased BOOLEAN NOT NULL
+);

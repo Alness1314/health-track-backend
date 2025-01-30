@@ -1,0 +1,28 @@
+#server configuration
+server:
+    port: ${PORT}
+    #error:
+        #include-stacktrace: never
+
+#spring configuration
+spring:
+    profiles:
+        active: ${PROFILE}
+
+    application:
+        name: Health Master
+
+#Open api swagger ui 
+springdoc:
+    api-docs:
+        path: /api-docs
+    swagger-ui:
+        persist-authorization: true
+
+#prefix endpoints configuration
+api:
+    prefix: ${PREFIX} 
+
+#secret jwt
+jwt:
+    secret: ${SECRET_KEY}
