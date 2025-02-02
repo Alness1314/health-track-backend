@@ -3,6 +3,8 @@ package com.alness.health.cities.dto.response;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.alness.health.states.dto.response.StateResp;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +19,7 @@ import lombok.Setter;
 public class CityResponse {
     private UUID id;
     private String name;
+    private StateResp state;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
     private Boolean erased;

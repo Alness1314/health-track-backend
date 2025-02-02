@@ -28,6 +28,9 @@ public class CountryEntity implements Serializable{
     @Column(nullable = false, columnDefinition = "character varying(64)")
     private String name;
 
+    @Column(name = "code", nullable = true, columnDefinition = "character varying(5)")
+    private String code;
+
     @Column(name = "create_at", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime createAt;
 

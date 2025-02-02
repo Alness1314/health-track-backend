@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -23,6 +24,7 @@ import com.alness.health.states.repository.StateRepository;
 import com.alness.health.states.service.StateService;
 import com.alness.health.states.specification.StateSpecification;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -36,25 +38,37 @@ public class StateServiceImpl implements StateService {
 
     private ModelMapper mapper = new ModelMapper();
 
+    @PostConstruct
+	private void init(){
+		configureModelMapper();
+	}
+
+	private void configureModelMapper() {
+        mapper.getConfiguration()
+                .setSkipNullEnabled(true)
+                .setFieldMatchingEnabled(true)
+                .setMatchingStrategy(MatchingStrategies.STRICT);
+    }
+
     @Override
-    public List<StateResponse> find(String countryId, Map<String, String> parameters) {
-        return stateRepository.findAll(filterWithParameters(updateParams(countryId, parameters)))
+    public List<StateResponse> find(Map<String, String> parameters) {
+        return stateRepository.findAll(filterWithParameters(parameters))
                 .stream()
                 .map(this::mapperDto)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public StateResponse findOne(String countryId, String id) {
-        StateEntity state = stateRepository.findOne(filterWithParameters(Map.of("id", id, "country", countryId)))
+    public StateResponse findOne(String id) {
+        StateEntity state = stateRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
                         "State not found"));
         return mapperDto(state);
     }
 
     @Override
-    public StateResponse save(String countryId, StateRequest request) {
-        CountryEntity country = countryRepository.findById(UUID.fromString(countryId))
+    public StateResponse save(StateRequest request) {
+        CountryEntity country = countryRepository.findById(UUID.fromString(request.getCountryId()))
                 .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
                         "Country not found"));
 
@@ -71,13 +85,13 @@ public class StateServiceImpl implements StateService {
     }
 
     @Override
-    public StateResponse update(String countryId, String id, StateRequest request) {
+    public StateResponse update(String id, StateRequest request) {
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
     @Override
-    public ResponseDto delete(String countryId, String id) {
-        StateEntity state = stateRepository.findOne(filterWithParameters(Map.of("id", id, "country", countryId)))
+    public ResponseDto delete(String id) {
+        StateEntity state = stateRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
                         "State not found"));
         try {
@@ -89,11 +103,6 @@ public class StateServiceImpl implements StateService {
             return new ResponseDto("An error occurred while deleting the state", HttpStatus.METHOD_NOT_ALLOWED, false,
                     null);
         }
-    }
-
-    private Map<String, String> updateParams(String countryId, Map<String, String> params) {
-        params.put("country", countryId);
-        return params;
     }
 
     private StateResponse mapperDto(StateEntity source) {

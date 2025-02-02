@@ -13,4 +13,5 @@ import lombok.Setter;
 @Builder
 public class CountryRequest {
     private String name;
+    private String code;
 }

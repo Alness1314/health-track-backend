@@ -25,42 +25,39 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("${api.prefix}/country")
+@RequestMapping("${api.prefix}/states")
 @Tag(name = "States", description = ".")
 public class StateController {
     @Autowired
     private StateService stateService;
 
-    @GetMapping("/{countryId}/states")
-    public ResponseEntity<List<StateResponse>> findAll(@PathVariable String countryId,
-            @RequestParam Map<String, String> parameters) {
-        List<StateResponse> response = stateService.find(countryId, parameters);
+    @GetMapping
+    public ResponseEntity<List<StateResponse>> findAll(@RequestParam Map<String, String> parameters) {
+        List<StateResponse> response = stateService.find(parameters);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/{countryId}/states/{id}")
-    public ResponseEntity<StateResponse> findOne(@PathVariable String countryId, @PathVariable String id) {
-        StateResponse response = stateService.findOne(countryId, id);
+    @GetMapping("/{id}")
+    public ResponseEntity<StateResponse> findOne(@PathVariable String id) {
+        StateResponse response = stateService.findOne(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @PostMapping("/{countryId}/states")
-    public ResponseEntity<StateResponse> save(@PathVariable String countryId,
-            @Valid @RequestBody StateRequest request) {
-        StateResponse response = stateService.save(countryId, request);
+    @PostMapping
+    public ResponseEntity<StateResponse> save(@Valid @RequestBody StateRequest request) {
+        StateResponse response = stateService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{countryId}/states/{id}")
-    public ResponseEntity<StateResponse> update(@PathVariable String countryId, @PathVariable String id,
-            @RequestBody StateRequest request) {
-        StateResponse response = stateService.update(countryId, id, request);
+    @PutMapping("/{id}")
+    public ResponseEntity<StateResponse> update(@PathVariable String id, @RequestBody StateRequest request) {
+        StateResponse response = stateService.update(id, request);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @DeleteMapping("/{countryId}/states/{id}")
-    public ResponseEntity<ResponseDto> delete(@PathVariable String countryId, @PathVariable String id) {
-        ResponseDto response = stateService.delete(countryId, id);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDto> delete(@PathVariable String id) {
+        ResponseDto response = stateService.delete(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 }
