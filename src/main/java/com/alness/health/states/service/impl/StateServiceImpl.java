@@ -39,11 +39,11 @@ public class StateServiceImpl implements StateService {
     private ModelMapper mapper = new ModelMapper();
 
     @PostConstruct
-	private void init(){
-		configureModelMapper();
-	}
+    private void init() {
+        configureModelMapper();
+    }
 
-	private void configureModelMapper() {
+    private void configureModelMapper() {
         mapper.getConfiguration()
                 .setSkipNullEnabled(true)
                 .setFieldMatchingEnabled(true)
@@ -111,6 +111,26 @@ public class StateServiceImpl implements StateService {
 
     private Specification<StateEntity> filterWithParameters(Map<String, String> parameters) {
         return new StateSpecification().getSpecificationByFilters(parameters);
+    }
+
+    @Override
+    public ResponseDto multiSaving(String countryId, List<String> stateList) {
+        CountryEntity country = countryRepository.findById(UUID.fromString(countryId))
+                .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
+                        "Country not found"));
+
+        List<StateEntity> states = stateList.stream()
+                .map(req -> new StateEntity(null, req, country, null, null, null))
+                .toList();
+
+        try {
+            stateRepository.saveAll(states);
+            return new ResponseDto("the states have been created.", HttpStatus.ACCEPTED, true, null);
+        } catch (Exception e) {
+            log.error("Error to save all states ", e);
+            return new ResponseDto("An error occurred while creating the states", HttpStatus.METHOD_NOT_ALLOWED, false,
+                    null);
+        }
     }
 
 }

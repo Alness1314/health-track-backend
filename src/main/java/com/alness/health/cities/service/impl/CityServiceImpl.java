@@ -40,11 +40,11 @@ public class CityServiceImpl implements CityService {
     private ModelMapper mapper = new ModelMapper();
 
     @PostConstruct
-	private void init(){
-		configureModelMapper();
-	}
+    private void init() {
+        configureModelMapper();
+    }
 
-	private void configureModelMapper() {
+    private void configureModelMapper() {
         mapper.getConfiguration()
                 .setSkipNullEnabled(true)
                 .setFieldMatchingEnabled(true)
@@ -113,6 +113,26 @@ public class CityServiceImpl implements CityService {
 
     private Specification<CityEntity> filterWithParameters(Map<String, String> parameters) {
         return new CitySpecification().getSpecificationByFilters(parameters);
+    }
+
+    @Override
+    public ResponseDto multiSaving(String stateId, List<String> citiesList) {
+        StateEntity state = stateRepository.findById(UUID.fromString(stateId))
+                .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
+                        "State not found"));
+
+        List<CityEntity> cities = citiesList.stream()
+                .map(req -> new CityEntity(null, req, state, null, null, null))
+                .toList();
+
+        try {
+            cityRepository.saveAll(cities);
+            return new ResponseDto("the cities have been created.", HttpStatus.ACCEPTED, true, null);
+        } catch (Exception e) {
+            log.error("Error to save all cities ", e);
+            return new ResponseDto("An error occurred while creating the cities", HttpStatus.METHOD_NOT_ALLOWED, false,
+                    null);
+        }
     }
 
 }

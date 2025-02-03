@@ -1,4 +1,4 @@
-package com.alness.health.cities.controller;
+package com.alness.health.address.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -16,55 +16,49 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alness.health.cities.dto.request.CityRequest;
-import com.alness.health.cities.dto.response.CityResponse;
-import com.alness.health.cities.service.CityService;
+import com.alness.health.address.dto.request.AddressRequest;
+import com.alness.health.address.dto.response.AddressResponse;
+import com.alness.health.address.service.AddressService;
 import com.alness.health.common.dto.ResponseDto;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("${api.prefix}/cities")
-@Tag(name = "Cities", description = ".")
-public class CityController {
+@RequestMapping("${api.prefix}/address")
+@Tag(name = "Address", description = ".")
+public class AddressController {
     @Autowired
-    private CityService cityService;
+    private AddressService addressService;
 
     @GetMapping()
-    public ResponseEntity<List<CityResponse>> findAll(@RequestParam Map<String, String> parameters) {
-        List<CityResponse> response = cityService.find(parameters);
+    public ResponseEntity<List<AddressResponse>> findAll(@RequestParam Map<String, String> parameters) {
+        List<AddressResponse> response = addressService.find(parameters);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CityResponse> findOne(@PathVariable String id) {
-        CityResponse response = cityService.findOne(id);
+    public ResponseEntity<AddressResponse> findOne(@PathVariable String id) {
+        AddressResponse response = addressService.findOne(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @PostMapping
-    public ResponseEntity<CityResponse> save(@Valid @RequestBody CityRequest request) {
-        CityResponse response = cityService.save(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/all/{stateId}")
-    public ResponseEntity<ResponseDto> multiSave(@PathVariable String stateId,
-            @Valid @RequestBody List<String> request) {
-        ResponseDto response = cityService.multiSaving(stateId, request);
+    @PostMapping()
+    public ResponseEntity<AddressResponse> save(@Valid @RequestBody AddressRequest request) {
+        AddressResponse response = addressService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CityResponse> update(@PathVariable String id, @RequestBody CityRequest request) {
-        CityResponse response = cityService.update(id, request);
+    public ResponseEntity<AddressResponse> update(@PathVariable String id, @RequestBody AddressRequest request) {
+        AddressResponse response = addressService.update(id, request);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> delete(@PathVariable String id) {
-        ResponseDto response = cityService.delete(id);
+        ResponseDto response = addressService.delete(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
+
 }

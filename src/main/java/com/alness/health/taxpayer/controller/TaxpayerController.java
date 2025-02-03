@@ -1,4 +1,4 @@
-package com.alness.health.cities.controller;
+package com.alness.health.taxpayer.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -16,55 +16,48 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alness.health.cities.dto.request.CityRequest;
-import com.alness.health.cities.dto.response.CityResponse;
-import com.alness.health.cities.service.CityService;
 import com.alness.health.common.dto.ResponseDto;
+import com.alness.health.taxpayer.dto.request.TaxpayerRequest;
+import com.alness.health.taxpayer.dto.response.TaxpayerResponse;
+import com.alness.health.taxpayer.service.TaxpayerService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("${api.prefix}/cities")
-@Tag(name = "Cities", description = ".")
-public class CityController {
+@RequestMapping("${api.prefix}/taxpayer")
+@Tag(name = "Taxpayer", description = ".")
+public class TaxpayerController {
     @Autowired
-    private CityService cityService;
+    private TaxpayerService taxpayerService;
 
-    @GetMapping()
-    public ResponseEntity<List<CityResponse>> findAll(@RequestParam Map<String, String> parameters) {
-        List<CityResponse> response = cityService.find(parameters);
+    @GetMapping
+    public ResponseEntity<List<TaxpayerResponse>> findAll(@RequestParam Map<String, String> parameters) {
+        List<TaxpayerResponse> response = taxpayerService.find(parameters);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CityResponse> findOne(@PathVariable String id) {
-        CityResponse response = cityService.findOne(id);
+    public ResponseEntity<TaxpayerResponse> findOne(@PathVariable String id) {
+        TaxpayerResponse response = taxpayerService.findOne(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @PostMapping
-    public ResponseEntity<CityResponse> save(@Valid @RequestBody CityRequest request) {
-        CityResponse response = cityService.save(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/all/{stateId}")
-    public ResponseEntity<ResponseDto> multiSave(@PathVariable String stateId,
-            @Valid @RequestBody List<String> request) {
-        ResponseDto response = cityService.multiSaving(stateId, request);
+    public ResponseEntity<TaxpayerResponse> save(@Valid @RequestBody TaxpayerRequest request) {
+        TaxpayerResponse response = taxpayerService.save(request);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CityResponse> update(@PathVariable String id, @RequestBody CityRequest request) {
-        CityResponse response = cityService.update(id, request);
+    public ResponseEntity<TaxpayerResponse> update(@PathVariable String id, @RequestBody TaxpayerRequest request) {
+        TaxpayerResponse response = taxpayerService.update(id, request);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto> delete(@PathVariable String id) {
-        ResponseDto response = cityService.delete(id);
+        ResponseDto response = taxpayerService.delete(id);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 }

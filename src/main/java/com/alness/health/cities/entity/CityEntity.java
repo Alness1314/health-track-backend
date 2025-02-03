@@ -14,13 +14,15 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Table(name = "cities")
 @Entity
 @Getter
-@Setter
+@Setter @AllArgsConstructor @NoArgsConstructor
 public class CityEntity {
     @Id
     @GeneratedValue(generator = "uuid2")

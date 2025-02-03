@@ -11,6 +11,7 @@ public interface CityService {
     public List<CityResponse> find(Map<String, String> parameters);
     public CityResponse findOne(String id);
     public CityResponse save(CityRequest request);
+    public ResponseDto multiSaving(String stateId, List<String> citiesList);
     public CityResponse update(String id, CityRequest request);
     public ResponseDto delete(String id);
 }

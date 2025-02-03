@@ -49,6 +49,12 @@ public class StateController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/all/{countryId}")
+    public ResponseEntity<ResponseDto> multiSave(@PathVariable String countryId, @Valid @RequestBody List<String> request) {
+        ResponseDto response = stateService.multiSaving(countryId, request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<StateResponse> update(@PathVariable String id, @RequestBody StateRequest request) {
         StateResponse response = stateService.update(id, request);
