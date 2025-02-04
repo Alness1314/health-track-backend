@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -20,6 +18,7 @@ import com.alness.health.common.dto.ResponseDto;
 import com.alness.health.company.dto.response.CompanyResponse;
 import com.alness.health.company.entity.CompanyEntity;
 import com.alness.health.company.service.CompanyService;
+import com.alness.health.config.GenericMapper;
 import com.alness.health.exceptions.RestExceptionHandler;
 import com.alness.health.taxpayer.dto.request.TaxpayerRequest;
 import com.alness.health.taxpayer.dto.response.TaxpayerResponse;
@@ -30,7 +29,6 @@ import com.alness.health.taxpayer.repository.TaxpayerRepository;
 import com.alness.health.taxpayer.service.TaxpayerService;
 import com.alness.health.taxpayer.specification.TaxpayerSpecification;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -48,19 +46,8 @@ public class TaxpayerServiceImpl implements TaxpayerService {
     @Autowired
     private LegalRepresentativeRepository legalRepresentativeRepository;
 
-    ModelMapper mapper = new ModelMapper();
-
-    @PostConstruct
-    private void init() {
-        configureModelMapper();
-    }
-
-    private void configureModelMapper() {
-        mapper.getConfiguration()
-                .setSkipNullEnabled(true)
-                .setFieldMatchingEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
-    }
+    @Autowired
+    private GenericMapper mapper;
 
     @Override
     public List<TaxpayerResponse> find(Map<String, String> parameters) {
@@ -109,7 +96,7 @@ public class TaxpayerServiceImpl implements TaxpayerService {
             throw new RestExceptionHandler(ApiCodes.API_CODE_500, HttpStatus.INTERNAL_SERVER_ERROR,
                     "Error to save taxpayer");
         }
-        return maptesting(taxpayer, TaxpayerResponse.class);
+        return mapperDto(taxpayer);
     }
 
     @Override
@@ -130,7 +117,5 @@ public class TaxpayerServiceImpl implements TaxpayerService {
         return new TaxpayerSpecification().getSpecificationByFilters(parameters);
     }
 
-    private <T, R> R maptesting(T source, Class<R> entityClass){
-        return mapper.map(source, entityClass);
-    }
+    
 }

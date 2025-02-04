@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -20,11 +18,11 @@ import com.alness.health.cities.service.CityService;
 import com.alness.health.cities.specification.CitySpecification;
 import com.alness.health.common.ApiCodes;
 import com.alness.health.common.dto.ResponseDto;
+import com.alness.health.config.GenericMapper;
 import com.alness.health.exceptions.RestExceptionHandler;
 import com.alness.health.states.entity.StateEntity;
 import com.alness.health.states.repository.StateRepository;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,19 +35,8 @@ public class CityServiceImpl implements CityService {
     @Autowired
     private StateRepository stateRepository;
 
-    private ModelMapper mapper = new ModelMapper();
-
-    @PostConstruct
-    private void init() {
-        configureModelMapper();
-    }
-
-    private void configureModelMapper() {
-        mapper.getConfiguration()
-                .setSkipNullEnabled(true)
-                .setFieldMatchingEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
-    }
+    @Autowired
+    private GenericMapper mapper;
 
     @Override
     public List<CityResponse> find(Map<String, String> parameters) {

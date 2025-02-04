@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -14,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.alness.health.common.ApiCodes;
 import com.alness.health.common.dto.ResponseDto;
+import com.alness.health.config.GenericMapper;
 import com.alness.health.country.entity.CountryEntity;
 import com.alness.health.country.repository.CountryRepository;
 import com.alness.health.exceptions.RestExceptionHandler;
@@ -24,7 +23,6 @@ import com.alness.health.states.repository.StateRepository;
 import com.alness.health.states.service.StateService;
 import com.alness.health.states.specification.StateSpecification;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -36,19 +34,8 @@ public class StateServiceImpl implements StateService {
     @Autowired
     private CountryRepository countryRepository;
 
-    private ModelMapper mapper = new ModelMapper();
-
-    @PostConstruct
-    private void init() {
-        configureModelMapper();
-    }
-
-    private void configureModelMapper() {
-        mapper.getConfiguration()
-                .setSkipNullEnabled(true)
-                .setFieldMatchingEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
-    }
+    @Autowired
+    private GenericMapper mapper;
 
     @Override
     public List<StateResponse> find(Map<String, String> parameters) {

@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -13,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.alness.health.common.ApiCodes;
 import com.alness.health.common.dto.ResponseDto;
+import com.alness.health.config.GenericMapper;
 import com.alness.health.country.dto.request.CountryRequest;
 import com.alness.health.country.dto.response.CountryResponse;
 import com.alness.health.country.entity.CountryEntity;
@@ -21,7 +20,6 @@ import com.alness.health.country.service.CountryService;
 import com.alness.health.country.specification.CountrySpecification;
 import com.alness.health.exceptions.RestExceptionHandler;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -30,19 +28,8 @@ public class CountryServiceImpl implements CountryService {
 	@Autowired
 	private CountryRepository countryRepository;
 
-	private ModelMapper mapper = new ModelMapper();
-
-	@PostConstruct
-	private void init(){
-		configureModelMapper();
-	}
-
-	private void configureModelMapper() {
-        mapper.getConfiguration()
-                .setSkipNullEnabled(true)
-                .setFieldMatchingEnabled(true)
-                .setMatchingStrategy(MatchingStrategies.STRICT);
-    }
+	@Autowired
+    private GenericMapper mapper;
 
 	@Override
 	public List<CountryResponse> find(Map<String, String> parameters) {
