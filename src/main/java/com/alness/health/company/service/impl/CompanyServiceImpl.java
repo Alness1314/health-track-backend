@@ -2,8 +2,11 @@ package com.alness.health.company.service.impl;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +20,7 @@ import com.alness.health.company.dto.response.CompanyResponse;
 import com.alness.health.company.entity.CompanyEntity;
 import com.alness.health.company.repository.CompanyRepository;
 import com.alness.health.company.service.CompanyService;
+import com.alness.health.company.specification.CompanySpecification;
 import com.alness.health.config.GenericMapper;
 import com.alness.health.exceptions.RestExceptionHandler;
 
@@ -36,12 +40,18 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Override
     public List<CompanyResponse> find(Map<String, String> parameters) {
-        throw new UnsupportedOperationException("Unimplemented method 'find'");
+        return companyRepository.findAll(filterWithParameters(parameters))
+                .stream()
+                .map(this::mapperDto)
+                .collect(Collectors.toList());
     }
 
     @Override
     public CompanyResponse findOne(String id) {
-        throw new UnsupportedOperationException("Unimplemented method 'findOne'");
+        CompanyEntity taxpayer = companyRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
+                        "company not found"));
+        return mapperDto(taxpayer);
     }
 
     @Override
@@ -67,6 +77,10 @@ public class CompanyServiceImpl implements CompanyService {
     @Override
     public ResponseDto delete(String id) {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
+    }
+
+    private Specification<CompanyEntity> filterWithParameters(Map<String, String> parameters) {
+        return new CompanySpecification().getSpecificationByFilters(parameters);
     }
 
     private CompanyResponse mapperDto(CompanyEntity source) {
