@@ -2,6 +2,7 @@ package com.alness.health.subsidiary.dto.request;
 
 import com.alness.health.address.dto.request.AddressRequest;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,10 @@ public class SubsidiaryRequest {
     private String email;
     private String responsible;
     private String openingHours;
+    
+    @NotNull
     private String taxpayerId;
+    
+    @NotNull
     private AddressRequest address;
 }

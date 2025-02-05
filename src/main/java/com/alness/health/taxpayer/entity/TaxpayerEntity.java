@@ -51,6 +51,9 @@ public class TaxpayerEntity {
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
 
+    @Column(name = "data_key", nullable = false, columnDefinition = "character varying(64)")
+    private String dataKey;
+
     @OneToOne
     @JoinColumn(name = "company_id", nullable = true)
     private CompanyEntity company;

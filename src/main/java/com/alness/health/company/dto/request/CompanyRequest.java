@@ -19,5 +19,6 @@ public class CompanyRequest {
     private String description;
     private String email;
     private String phone;
+    private String imageId;
     private AddressRequest address;
 }

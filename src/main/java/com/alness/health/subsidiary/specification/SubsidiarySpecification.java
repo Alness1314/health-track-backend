@@ -13,8 +13,9 @@ import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-public class SubsidiarySpecification implements Specification<SubsidiaryEntity>{
+public class SubsidiarySpecification implements Specification<SubsidiaryEntity> {
 
+    @SuppressWarnings("null")
     @Override
     public Predicate toPredicate(Root<SubsidiaryEntity> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
         return null;
@@ -49,5 +50,5 @@ public class SubsidiarySpecification implements Specification<SubsidiaryEntity>{
     private Specification<SubsidiaryEntity> filterByErased(String erase) {
         return (root, query, cb) -> cb.equal(root.<Boolean>get("erased"), Boolean.parseBoolean(erase));
     }
-    
+
 }

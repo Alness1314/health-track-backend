@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.alness.health.address.entity.AddressEntity;
+import com.alness.health.files.entity.FileEntity;
 import com.alness.health.taxpayer.entity.TaxpayerEntity;
 
 import jakarta.persistence.CascadeType;
@@ -45,6 +46,10 @@ public class CompanyEntity {
     @ManyToOne
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
+
+    @ManyToOne
+    @JoinColumn(name = "image_id", nullable = false)
+    private FileEntity image;
 
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private TaxpayerEntity taxpayer;

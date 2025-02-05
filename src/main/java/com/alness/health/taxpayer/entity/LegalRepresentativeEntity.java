@@ -35,6 +35,9 @@ public class LegalRepresentativeEntity {
     @Column(nullable = false, columnDefinition = "character varying(13)")
     private String rfc;
 
+    @Column(name = "data_key", nullable = false, columnDefinition = "character varying(64)")
+    private String dataKey;
+
     @OneToOne(mappedBy = "legalRepresentative", cascade = CascadeType.ALL, orphanRemoval = true)
     private TaxpayerEntity taxpayer;
 

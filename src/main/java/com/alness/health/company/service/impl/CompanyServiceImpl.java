@@ -23,6 +23,9 @@ import com.alness.health.company.service.CompanyService;
 import com.alness.health.company.specification.CompanySpecification;
 import com.alness.health.config.GenericMapper;
 import com.alness.health.exceptions.RestExceptionHandler;
+import com.alness.health.files.dto.FileResponse;
+import com.alness.health.files.entity.FileEntity;
+import com.alness.health.files.service.FileService;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,6 +37,9 @@ public class CompanyServiceImpl implements CompanyService {
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private FileService fileService;
 
     @Autowired
     private GenericMapper mapper;
@@ -59,6 +65,11 @@ public class CompanyServiceImpl implements CompanyService {
         CompanyEntity company = mapper.map(request, CompanyEntity.class);
         AddressResponse address = addressService.save(request.getAddress());
         company.setAddress(mapper.map(address, AddressEntity.class));
+
+        if (request.getImageId() != null) {
+            FileResponse imageFile = fileService.findOne(request.getImageId());
+            company.setImage(mapper.map(imageFile, FileEntity.class));
+        }
         try {
             company = companyRepository.save(company);
         } catch (Exception e) {
