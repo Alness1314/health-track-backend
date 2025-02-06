@@ -57,16 +57,6 @@ CREATE TABLE address (
 );
 
 
-CREATE TABLE legal_representative (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    full_name VARCHAR(128) NOT NULL,
-    rfc VARCHAR(13) NOT NULL,
-    address_id UUID,
-    data_key VARCHAR(64) NOT NULL,
-    erased BOOLEAN NOT NULL DEFAULT FALSE,
-    CONSTRAINT fk_legal_representative_address FOREIGN KEY (address_id) REFERENCES address(id)
-);
-
 CREATE TABLE company (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name CHARACTER VARYING(128) NOT NULL,
@@ -82,22 +72,32 @@ CREATE TABLE company (
     CONSTRAINT fk_company_files FOREIGN KEY (image_id) REFERENCES files (id)
 );
 
-
 CREATE TABLE taxpayer (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    corporate_reason_or_natural_person VARCHAR(128) NOT NULL,
-    rfc VARCHAR(13) NOT NULL,
+    corporate_reason_or_natural_person VARCHAR(256) NOT NULL,
+    rfc VARCHAR(256) NOT NULL,
     type_person VARCHAR(12) NOT NULL,
-    legal_representative_id UUID UNIQUE,
     address_id UUID NOT NULL,
-    company_id UUID NOT NULL,
     data_key VARCHAR(64) NOT NULL,
+    company_id UUID NOT NULL,
     create_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
     update_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
     erased BOOLEAN NOT NULL DEFAULT FALSE,
-    CONSTRAINT fk_taxpayer_legal_representative FOREIGN KEY (legal_representative_id) REFERENCES legal_representative(id),
-    CONSTRAINT fk_taxpayer_address FOREIGN KEY (address_id) REFERENCES address(id),
-    CONSTRAINT fk_taxpayer_company FOREIGN KEY (company_id) REFERENCES company (id)
+    CONSTRAINT fk_taxpayer_address FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE CASCADE,
+    CONSTRAINT fk_taxpayer_company FOREIGN KEY (company_id) REFERENCES company(id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE legal_representative (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    full_name VARCHAR(256) NOT NULL,
+    rfc VARCHAR(256) NOT NULL,
+    data_key VARCHAR(64) NULL,
+    taxpayer_id UUID NOT NULL,
+    address_id UUID NOT NULL,
+    erased BOOLEAN NOT NULL DEFAULT FALSE,
+    CONSTRAINT fk_taxpayer FOREIGN KEY (taxpayer_id) REFERENCES taxpayer(id) ON DELETE CASCADE,
+    CONSTRAINT fk_address FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE CASCADE
 );
 
 CREATE TABLE subsidiary (

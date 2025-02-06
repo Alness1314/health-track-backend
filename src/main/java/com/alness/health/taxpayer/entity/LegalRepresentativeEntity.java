@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.alness.health.address.entity.AddressEntity;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,11 +37,12 @@ public class LegalRepresentativeEntity {
     @Column(name = "data_key", nullable = false, columnDefinition = "character varying(64)")
     private String dataKey;
 
-    @OneToOne(mappedBy = "legalRepresentative", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
+    @JoinColumn(name = "taxpayer_id", nullable = false)
     private TaxpayerEntity taxpayer;
 
     @ManyToOne
-    @JoinColumn(name = "address_id", columnDefinition = "uuid", nullable = true)
+    @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
 
     @Column(nullable = false, columnDefinition = "boolean")

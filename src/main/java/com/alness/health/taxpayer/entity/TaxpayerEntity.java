@@ -31,7 +31,7 @@ import lombok.Setter;
 public class TaxpayerEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uniqueidentifier")
     private UUID id;
 
     @Column(name = "corporate_reason_or_natural_person", nullable = false, columnDefinition = "character varying(64)")
@@ -43,8 +43,9 @@ public class TaxpayerEntity {
     @Column(name = "type_person", nullable = false, columnDefinition = "character varying(12)")
     private String typePerson;
 
-    @OneToOne
-    @JoinColumn(name = "legal_representative_id", nullable = true)
+    //@OneToOne
+    //@JoinColumn(name = "legal_representative_id", nullable = true)
+    @OneToOne(mappedBy = "taxpayer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private LegalRepresentativeEntity legalRepresentative;
 
     @ManyToOne
@@ -54,8 +55,8 @@ public class TaxpayerEntity {
     @Column(name = "data_key", nullable = false, columnDefinition = "character varying(64)")
     private String dataKey;
 
-    @OneToOne
-    @JoinColumn(name = "company_id", nullable = true)
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "company_id", nullable = false)
     private CompanyEntity company;
 
     @OneToMany(mappedBy = "taxpayer", fetch = FetchType.LAZY, cascade = CascadeType.ALL)

@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.alness.health.address.dto.response.AddressResponse;
+import com.alness.health.files.dto.FileResponse;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class CompanyResponse {
     private String email;
     private String phone;
     private AddressResponse address;
+    private FileResponse image;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;
     private Boolean erased;

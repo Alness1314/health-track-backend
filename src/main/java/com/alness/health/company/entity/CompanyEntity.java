@@ -28,7 +28,7 @@ import lombok.Setter;
 public class CompanyEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
-    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
+    @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uniqueidentifier")
     private UUID id;
 
     @Column(name = "name", nullable = false, columnDefinition = "character varying(128)")
@@ -47,8 +47,8 @@ public class CompanyEntity {
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
 
-    @ManyToOne
-    @JoinColumn(name = "image_id", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "image_id", unique = true, nullable = true)
     private FileEntity image;
 
     @OneToOne(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)

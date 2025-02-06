@@ -3,7 +3,6 @@ package com.alness.health.company.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -49,15 +48,17 @@ public class CompanyServiceImpl implements CompanyService {
         return companyRepository.findAll(filterWithParameters(parameters))
                 .stream()
                 .map(this::mapperDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
     public CompanyResponse findOne(String id) {
-        CompanyEntity taxpayer = companyRepository.findById(UUID.fromString(id))
+        UUID idUUID = UUID.fromString(id);
+        log.info("UUID id: {}", idUUID);
+        CompanyEntity company = companyRepository.findById(idUUID)
                 .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
                         "company not found"));
-        return mapperDto(taxpayer);
+        return mapperDto(company);
     }
 
     @Override
@@ -67,6 +68,7 @@ public class CompanyServiceImpl implements CompanyService {
         company.setAddress(mapper.map(address, AddressEntity.class));
 
         if (request.getImageId() != null) {
+            log.info("ingreso a imagen");
             FileResponse imageFile = fileService.findOne(request.getImageId());
             company.setImage(mapper.map(imageFile, FileEntity.class));
         }
