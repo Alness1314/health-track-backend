@@ -2,7 +2,9 @@ package com.alness.health.utils;
 
 import javax.crypto.SecretKey;
 
+import com.alness.health.taxpayer.dto.response.LegalRepResp;
 import com.alness.health.taxpayer.dto.response.LegalRepresentativeResponse;
+import com.alness.health.taxpayer.dto.response.TaxpayerResp;
 import com.alness.health.taxpayer.dto.response.TaxpayerResponse;
 
 public class DecryptUtil {
@@ -23,7 +25,7 @@ public class DecryptUtil {
         response.setRfc(TextEncrypterUtil.decrypt(response.getRfc(), key));
     }
 
-    /*public static void decryptLegalRepLite(LegalRepResp response, String keyS) {
+    public static void decryptLegalRepLite(LegalRepResp response, String keyS) {
         SecretKey key = TextEncrypterUtil.stringToKey(keyS);
         response.setFullName(TextEncrypterUtil.decrypt(response.getFullName(), key));
         response.setRfc(TextEncrypterUtil.decrypt(response.getRfc(), key));
@@ -34,6 +36,6 @@ public class DecryptUtil {
         response.setCorporateReasonOrNaturalPerson(
                 TextEncrypterUtil.decrypt(response.getCorporateReasonOrNaturalPerson(), key));
         response.setRfc(TextEncrypterUtil.decrypt(response.getRfc(), key));
-    }*/
+    }
 
 }

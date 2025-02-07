@@ -3,7 +3,6 @@ package com.alness.health.cities.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -43,7 +42,7 @@ public class CityServiceImpl implements CityService {
         return cityRepository.findAll(filterWithParameters(parameters))
                 .stream()
                 .map(this::mapperDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override

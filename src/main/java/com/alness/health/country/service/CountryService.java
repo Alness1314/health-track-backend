@@ -11,6 +11,7 @@ public interface CountryService {
     public List<CountryResponse> find(Map<String, String> parameters);
     public CountryResponse findOne(String id);
     public CountryResponse save(CountryRequest request);
+    public ResponseDto multiSaving(List<CountryRequest> countryList);
     public CountryResponse update(String id, CountryRequest request);
     public ResponseDto delete(String id);
 }

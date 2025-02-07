@@ -17,8 +17,11 @@ import org.springframework.web.multipart.MultipartFile;
 import com.alness.health.files.dto.FileResponse;
 import com.alness.health.files.service.FileService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
-@RequestMapping("/files")
+@RequestMapping("${api.prefix}/files")
+@Tag(name = "Files", description = ".")
 public class FileController {
     @Autowired
     private FileService fileService;

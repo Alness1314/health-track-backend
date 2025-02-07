@@ -2,7 +2,6 @@ package com.alness.health.country.service.impl;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -29,14 +28,14 @@ public class CountryServiceImpl implements CountryService {
 	private CountryRepository countryRepository;
 
 	@Autowired
-    private GenericMapper mapper;
+	private GenericMapper mapper;
 
 	@Override
 	public List<CountryResponse> find(Map<String, String> parameters) {
 		return countryRepository.findAll(filterWithParameters(parameters))
 				.stream()
 				.map(this::mapperDto)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
@@ -87,6 +86,22 @@ public class CountryServiceImpl implements CountryService {
 
 	private Specification<CountryEntity> filterWithParameters(Map<String, String> parameters) {
 		return new CountrySpecification().getSpecificationByFilters(parameters);
+	}
+
+	@Override
+	public ResponseDto multiSaving(List<CountryRequest> countryList) {
+		try {
+			List<CountryEntity> countries = countryList.stream()
+					.map(req -> new CountryEntity(null, req.getName(), req.getCode(), null, null, null))
+					.toList();
+			countryRepository.saveAll(countries);
+			return new ResponseDto("the countries have been created.", HttpStatus.ACCEPTED, true, null);
+		} catch (Exception e) {
+			log.error("Error to save all states ", e);
+			return new ResponseDto("An error occurred while creating the countries", HttpStatus.METHOD_NOT_ALLOWED,
+					false,
+					null);
+		}
 	}
 
 }

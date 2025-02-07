@@ -50,6 +50,12 @@ public class CountryController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
+    @PostMapping("/multi-save")
+    public ResponseEntity<ResponseDto> save(@Valid @RequestBody List<CountryRequest> request) {
+        ResponseDto response = countryService.multiSaving(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<CountryResponse> update(@PathVariable String id, @RequestBody CountryRequest request) {
         CountryResponse response = countryService.update(id, request);

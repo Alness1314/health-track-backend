@@ -1,6 +1,5 @@
 package com.alness.health.country.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -18,7 +17,4 @@ public class CountryResponse {
     private UUID id;
     private String name;
     private String code;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-    private Boolean erased;
 }

@@ -1,6 +1,5 @@
 package com.alness.health.states.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +16,4 @@ import lombok.Setter;
 public class StateResponse {
     private UUID id;
     private String name;
-    private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-    private Boolean erased;
 }

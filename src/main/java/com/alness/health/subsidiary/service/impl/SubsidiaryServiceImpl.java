@@ -3,7 +3,6 @@ package com.alness.health.subsidiary.service.impl;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.alness.health.address.dto.response.AddressResponse;
 import com.alness.health.address.entity.AddressEntity;
+import com.alness.health.address.repository.AddressRepository;
 import com.alness.health.address.service.AddressService;
 import com.alness.health.common.ApiCodes;
 import com.alness.health.common.dto.ResponseDto;
@@ -23,9 +23,9 @@ import com.alness.health.subsidiary.entity.SubsidiaryEntity;
 import com.alness.health.subsidiary.repository.SubsidiaryRepository;
 import com.alness.health.subsidiary.service.SubsidiaryService;
 import com.alness.health.subsidiary.specification.SubsidiarySpecification;
-import com.alness.health.taxpayer.dto.response.TaxpayerResponse;
 import com.alness.health.taxpayer.entity.TaxpayerEntity;
-import com.alness.health.taxpayer.service.TaxpayerService;
+import com.alness.health.taxpayer.repository.TaxpayerRepository;
+import com.alness.health.utils.DecryptUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,10 +36,13 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     private SubsidiaryRepository subsidiaryRepository;
 
     @Autowired
-    private TaxpayerService taxpayerService;
+    private TaxpayerRepository taxpayerRepository;
 
     @Autowired
     private AddressService addressService;
+
+    @Autowired
+    private AddressRepository addressRepository;
 
     @Autowired
     private GenericMapper mapper;
@@ -49,7 +52,7 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
         return subsidiaryRepository.findAll(filterWithParameters(parameters))
                 .stream()
                 .map(this::mapperDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     @Override
@@ -66,10 +69,10 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
 
         try {
             if (request.getTaxpayerId() != null) {
-                TaxpayerResponse taxpayer = taxpayerService.findOne(request.getTaxpayerId());
-                TaxpayerEntity entity = mapper.map(taxpayer,
-                        TaxpayerEntity.class);
-                subsidiary.setTaxpayer(entity);
+                TaxpayerEntity taxpayer = taxpayerRepository.findById(UUID.fromString(request.getTaxpayerId()))
+                        .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.NOT_FOUND,
+                                "taxpayer not found"));
+                subsidiary.setTaxpayer(taxpayer);
             }
 
         } catch (Exception e) {
@@ -79,8 +82,10 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
         }
 
         try {
-            AddressResponse address = addressService.save(request.getAddress());
-            subsidiary.setAddress(mapper.map(address, AddressEntity.class));
+            AddressResponse addressResponse = addressService.save(request.getAddress());
+            AddressEntity addressEntity = addressRepository.findById(addressResponse.getId())
+                    .orElseThrow(() -> new RuntimeException("Address not found after save"));
+            subsidiary.setAddress(addressEntity);
             subsidiary = subsidiaryRepository.save(subsidiary);
         } catch (Exception e) {
             log.error("Error to save taxpayer {}", e.getMessage());
@@ -101,7 +106,10 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     }
 
     private SubsidiaryResponse mapperDto(SubsidiaryEntity source) {
-        return mapper.map(source, SubsidiaryResponse.class);
+        SubsidiaryResponse response = mapper.map(source, SubsidiaryResponse.class);
+        DecryptUtil.decryptLegalRepLite(response.getTaxpayer().getLegalRepresentative(), source.getTaxpayer().getLegalRepresentative().getDataKey());
+        DecryptUtil.decryptTaxpayerLite(response.getTaxpayer(), source.getTaxpayer().getDataKey());
+        return response;
     }
 
     private Specification<SubsidiaryEntity> filterWithParameters(Map<String, String> parameters) {

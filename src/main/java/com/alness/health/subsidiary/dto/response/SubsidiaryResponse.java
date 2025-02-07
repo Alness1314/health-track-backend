@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.alness.health.address.dto.response.AddressResponse;
-import com.alness.health.taxpayer.dto.response.TaxpayerResponse;
+import com.alness.health.taxpayer.dto.response.TaxpayerResp;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class SubsidiaryResponse {
     private String email;
     private String responsible;
     private String openingHours;
-    private TaxpayerResponse taxpayer;
+    private TaxpayerResp taxpayer;
     private AddressResponse address;
     private LocalDateTime createAt;
     private LocalDateTime updateAt;

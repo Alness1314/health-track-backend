@@ -30,6 +30,4 @@ public class AddressResponse {
     private StateResponse state;
     private CityResponse city;
     private LocalDateTime createAt;
-    private LocalDateTime updateAt;
-    private Boolean erased;
 }

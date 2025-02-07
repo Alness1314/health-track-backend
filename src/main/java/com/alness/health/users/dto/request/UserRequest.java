@@ -1,6 +1,6 @@
-package com.alness.health.cities.dto.response;
+package com.alness.health.users.dto.request;
 
-import java.util.UUID;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,7 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CityResponse {
-    private UUID id;
-    private String name;
+public class UserRequest {
+    private String username;
+    private String password;
+    private List<String> profiles;
 }

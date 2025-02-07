@@ -1,4 +1,4 @@
-package com.alness.health.cities.dto.response;
+package com.alness.health.taxpayer.dto.response;
 
 import java.util.UUID;
 
@@ -13,7 +13,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CityResponse {
+public class LegalRepResp {
     private UUID id;
-    private String name;
+    private String fullName;
+    private String rfc;
+    private Boolean erased;
 }

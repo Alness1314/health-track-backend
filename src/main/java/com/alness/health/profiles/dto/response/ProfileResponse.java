@@ -1,5 +1,6 @@
-package com.alness.health.cities.dto.response;
+package com.alness.health.profiles.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -13,7 +14,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CityResponse {
+public class ProfileResponse {
     private UUID id;
     private String name;
+    private Boolean erased;
+    private LocalDateTime created;
+    private LocalDateTime updated;
 }

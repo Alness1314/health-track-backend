@@ -3,7 +3,6 @@ package com.alness.health.config;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.modelmapper.AbstractConverter;
 import org.modelmapper.Converter;
@@ -58,7 +57,7 @@ public class GenericMapper {
     public <T, R> List<R> mapList(List<T> sourceList, Class<R> targetClass) {
         return sourceList.stream()
                 .map(element -> map(element, targetClass))
-                .collect(Collectors.toList());
+                .toList();
     }
 
     // Método genérico para crear convertidores personalizados
