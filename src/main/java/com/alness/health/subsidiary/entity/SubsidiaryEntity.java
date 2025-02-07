@@ -1,16 +1,20 @@
 package com.alness.health.subsidiary.entity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.alness.health.address.entity.AddressEntity;
 import com.alness.health.taxpayer.entity.TaxpayerEntity;
+import com.alness.health.employee.entity.EmployeeEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -50,6 +54,9 @@ public class SubsidiaryEntity {
     @ManyToOne
     @JoinColumn(name = "address_id", nullable = false)
     private AddressEntity address;
+
+    @ManyToMany(mappedBy = "subsidiary")
+    private List<EmployeeEntity> employee = new ArrayList<>();
 
     @Column(name = "create_at", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime createAt;
