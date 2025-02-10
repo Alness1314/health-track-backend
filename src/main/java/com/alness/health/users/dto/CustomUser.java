@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.UUID;
 
-//import org.springframework.security.core.GrantedAuthority;
-//import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.User;
 
-public class CustomUser {
-    //extends User
-    /*private final UUID userId;
+public class CustomUser extends User{
+    
+    private final UUID userId;
 
     public CustomUser(String username, String password, Collection<? extends GrantedAuthority> authorities,
             UUID userId) {
@@ -37,5 +37,5 @@ public class CustomUser {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), userId); // Incluye el hashCode de la clase padre y userId
-    }*/
+    }
 }

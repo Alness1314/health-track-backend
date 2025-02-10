@@ -1,6 +1,7 @@
 package com.alness.health.users.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -9,6 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -17,7 +23,7 @@ import com.alness.health.common.keys.Filters;
 import com.alness.health.config.GenericMapper;
 import com.alness.health.profiles.entity.ProfileEntity;
 import com.alness.health.profiles.repository.ProfileRepository;
-//import com.alness.health.users.dto.CustomUser;
+import com.alness.health.users.dto.CustomUser;
 import com.alness.health.users.dto.request.UserRequest;
 import com.alness.health.users.dto.response.UserResponse;
 import com.alness.health.users.entity.UserEntity;
@@ -29,8 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class UserServiceImpl implements UserService {
-    // UserDetailsService
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     @Autowired
     private UserRepository userRepository;
@@ -38,8 +43,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ProfileRepository profileRepository;
 
-    // @Autowired
-    // private PasswordEncoder passwordEncoder;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     GenericMapper mapper;
@@ -54,8 +59,7 @@ public class UserServiceImpl implements UserService {
                 profiles.add(profile);
             }
             newUser.setProfiles(profiles);
-            // newUser.setPassword(passwordEncoder.encode(request.getPassword()));
-            newUser.setPassword(request.getPassword());
+            newUser.setPassword(passwordEncoder.encode(request.getPassword()));
             newUser = userRepository.save(newUser);
             return mapperDto(newUser);
         } catch (DataIntegrityViolationException ex) {
@@ -105,22 +109,17 @@ public class UserServiceImpl implements UserService {
         return new UserSpecification().getSpecificationByFilters(parameters);
     }
 
-    /*
-     * @Override
-     * public UserDetails loadUserByUsername(String username) throws
-     * UsernameNotFoundException {
-     * Specification<UserEntity> specification =
-     * filterWithParameters(Map.of("username", username, "erased", "false"));
-     * UserEntity user = userRepository.findOne(specification).orElseThrow(
-     * () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
-     * String.format("User with name: [%s] not found in database", username)));
-     * Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
-     * user.getProfiles().forEach(profile -> authorities.add(new
-     * SimpleGrantedAuthority(profile.getName())));
-     * return new CustomUser(user.getUsername(), user.getPassword(), authorities,
-     * user.getId());
-     * }
-     */
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Specification<UserEntity> specification = filterWithParameters(Map.of("username", username));
+        UserEntity user = userRepository.findOne(specification).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        String.format("User with name: [%s] not found in database", username)));
+        Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        user.getProfiles().forEach(profile -> authorities.add(new SimpleGrantedAuthority(profile.getName())));
+        return new CustomUser(user.getUsername(), user.getPassword(), authorities,
+                user.getId());
+    }
 
     @Override
     public UserResponse findByUsername(String username) {

@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.alness.health.app.service.JsonFileReaderService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -26,7 +28,7 @@ public class JsonFileReaderServiceImpl implements JsonFileReaderService{
             ClassPathResource resource = new ClassPathResource(fileName);
             return objectMapper.readValue(resource.getInputStream(), new TypeReference<List<String>>() {});
         } catch (IOException e) {
-            throw new RuntimeException("Error al leer el archivo JSON", e);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Error al leer el archivo JSON", e);
         }
     }
     
