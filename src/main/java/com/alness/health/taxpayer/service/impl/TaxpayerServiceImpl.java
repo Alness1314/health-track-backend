@@ -30,7 +30,6 @@ import com.alness.health.taxpayer.entity.TaxpayerEntity;
 import com.alness.health.taxpayer.repository.TaxpayerRepository;
 import com.alness.health.taxpayer.service.TaxpayerService;
 import com.alness.health.taxpayer.specification.TaxpayerSpecification;
-import com.alness.health.utils.DecryptUtil;
 import com.alness.health.utils.TextEncrypterUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,9 +92,10 @@ public class TaxpayerServiceImpl implements TaxpayerService {
                         .orElseThrow(() -> new RuntimeException("Legal Representative Address not found after save"));
 
                 SecretKey key = TextEncrypterUtil.generateKey();
-                legalRep.setFullName(TextEncrypterUtil.encrypt(legalRep.getFullName(), key));
-                legalRep.setRfc(TextEncrypterUtil.encrypt(legalRep.getRfc(), key));
-                legalRep.setDataKey(TextEncrypterUtil.keyToString(key));
+                String keyString = TextEncrypterUtil.keyToString(key);
+                legalRep.setFullName(TextEncrypterUtil.encrypt(legalRep.getFullName(), keyString));
+                legalRep.setRfc(TextEncrypterUtil.encrypt(legalRep.getRfc(), keyString));
+                legalRep.setDataKey(keyString);
 
                 legalRep.setTaxpayer(taxpayer);
                 legalRep.setAddress(legalRepAddressEntity);
@@ -113,10 +113,11 @@ public class TaxpayerServiceImpl implements TaxpayerService {
 
             // Finalmente, guardar taxpayer
             SecretKey key = TextEncrypterUtil.generateKey();
+            String keyString = TextEncrypterUtil.keyToString(key);
             taxpayer.setCorporateReasonOrNaturalPerson(
-                    TextEncrypterUtil.encrypt(taxpayer.getCorporateReasonOrNaturalPerson(), key));
-            taxpayer.setRfc(TextEncrypterUtil.encrypt(taxpayer.getRfc(), key));
-            taxpayer.setDataKey(TextEncrypterUtil.keyToString(key));
+                    TextEncrypterUtil.encrypt(taxpayer.getCorporateReasonOrNaturalPerson(), keyString));
+            taxpayer.setRfc(TextEncrypterUtil.encrypt(taxpayer.getRfc(), keyString));
+            taxpayer.setDataKey(keyString);
 
             taxpayer = taxpayerRepository.save(taxpayer);
         } catch (Exception e) {
@@ -140,10 +141,7 @@ public class TaxpayerServiceImpl implements TaxpayerService {
     }
 
     private TaxpayerResponse mapperDto(TaxpayerEntity source) {
-        TaxpayerResponse response = mapper.map(source, TaxpayerResponse.class);
-        DecryptUtil.decryptLegalRep(response.getLegalRepresentative(), source.getLegalRepresentative().getDataKey());
-        DecryptUtil.decryptTaxpayer(response, source.getDataKey());
-        return response;
+        return mapper.map(source, TaxpayerResponse.class);
     }
 
     private Specification<TaxpayerEntity> filterWithParameters(Map<String, String> parameters) {

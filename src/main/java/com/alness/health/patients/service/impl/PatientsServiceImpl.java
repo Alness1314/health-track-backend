@@ -1,4 +1,4 @@
-package com.alness.health.employee.service.impl;
+package com.alness.health.patients.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -20,16 +20,14 @@ import com.alness.health.common.dto.ResponseDto;
 import com.alness.health.common.keys.Filters;
 import com.alness.health.common.messages.Messages;
 import com.alness.health.config.GenericMapper;
-import com.alness.health.employee.dto.request.EmployeeRequest;
-import com.alness.health.employee.dto.response.EmployeeResponse;
-import com.alness.health.employee.entity.EmployeeEntity;
-import com.alness.health.employee.repository.EmployeeRepository;
-import com.alness.health.employee.service.EmployeeService;
-import com.alness.health.employee.specification.EmployeeSpecification;
 import com.alness.health.exceptions.RestExceptionHandler;
-import com.alness.health.files.dto.FileResponse;
-import com.alness.health.files.entity.FileEntity;
-import com.alness.health.files.service.FileService;
+import com.alness.health.patients.dto.request.PatientsRequest;
+import com.alness.health.patients.dto.response.PatientsResponse;
+import com.alness.health.patients.entity.MedicalRecordEntity;
+import com.alness.health.patients.entity.PatientsEntity;
+import com.alness.health.patients.repository.PatientsRepository;
+import com.alness.health.patients.service.PatientsService;
+import com.alness.health.patients.specification.PatientsSpecification;
 import com.alness.health.subsidiary.entity.SubsidiaryEntity;
 import com.alness.health.subsidiary.repository.SubsidiaryRepository;
 import com.alness.health.users.dto.request.UserRequest;
@@ -42,9 +40,9 @@ import lombok.extern.slf4j.Slf4j;
 
 @Service
 @Slf4j
-public class EmployeeServiceImpl implements EmployeeService {
+public class PatientsServiceImpl implements PatientsService {
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private PatientsRepository patientsRepository;
 
     @Autowired
     private AddressRepository addressRepository;
@@ -62,48 +60,47 @@ public class EmployeeServiceImpl implements EmployeeService {
     private UserService userService;
 
     @Autowired
-    private FileService fileService;
-
-    @Autowired
-    GenericMapper mapper;
+    private GenericMapper mapper;
 
     @Override
-    public List<EmployeeResponse> find(Map<String, String> parameters) {
-        return employeeRepository.findAll(filterWithParams(parameters))
+    public List<PatientsResponse> find(Map<String, String> parameters) {
+        return patientsRepository.findAll(filterWithParams(parameters))
                 .stream()
                 .map(this::mapperDto)
                 .toList();
     }
 
     @Override
-    public EmployeeResponse findOne(String id) {
-        EmployeeEntity employee = employeeRepository.findOne(filterWithParams(Map.of(Filters.KEY_ID, id)))
+    public PatientsResponse findOne(String id) {
+        PatientsEntity patients = patientsRepository.findOne(filterWithParams(Map.of(Filters.KEY_ID, id)))
                 .orElseThrow(() -> new RestExceptionHandler(ApiCodes.API_CODE_404, HttpStatus.INTERNAL_SERVER_ERROR,
-                        "Employee not found"));
-        return mapperDto(employee);
+                        "Patient not found"));
+        return mapperDto(patients);
     }
 
     @SuppressWarnings("null")
     @Override
-    public EmployeeResponse save(EmployeeRequest request) {
-        EmployeeEntity employee = mapper.map(request, EmployeeEntity.class);
-
+    public PatientsResponse save(PatientsRequest request) {
+        PatientsEntity patient = mapper.map(request, PatientsEntity.class);
         try {
-            // Guardar dirección del contribuyente primero
-            employee.setAddress(saveAndGetAddress(request.getAddress()));
+            // guardar la direccion
+            patient.setAddress(saveAndGetAddress(request.getAddress()));
 
-            // Guardar usuario
-            employee.setUser(saveAndGetUser(request.getUser()));
+            // guardar el usuario
+            patient.setUser(saveAndGetUser(request.getUser()));
 
             // Guardar subsidiarias
-            employee.setSubsidiary(saveAndGetSubsidiaries(request.getSubidiary()));
+            patient.setSubsidiary(saveAndGetSubsidiaries(request.getSubsidiaryId()));
 
-            if (request.getImageId() != null) {
-                FileResponse imageFile = fileService.findOne(request.getImageId());
-                employee.setImage(mapper.map(imageFile, FileEntity.class));
+            if (request.getMedicalRecord() != null) {
+                MedicalRecordEntity medicalRecord = mapper.map(request.getMedicalRecord(),
+                        MedicalRecordEntity.class);
+                medicalRecord.setPatient(patient);
+                patient.setMedicalRecord(medicalRecord);
             }
 
-            employee = employeeRepository.save(employee);
+            patient = patientsRepository.save(patient);
+
         } catch (DataIntegrityViolationException e) {
             // Captura de excepciones de integridad de datos
             log.error("Error de integridad de datos al guardar el empleado", e);
@@ -118,11 +115,11 @@ public class EmployeeServiceImpl implements EmployeeService {
             throw new RestExceptionHandler(ApiCodes.API_CODE_500, HttpStatus.INTERNAL_SERVER_ERROR,
                     String.format(Messages.ERROR_TO_SAVE_ENTITY, Messages.EMPLOYEE));
         }
-        return mapperDto(employee);
+        return mapperDto(patient);
     }
 
     @Override
-    public EmployeeResponse update(String id, EmployeeRequest request) {
+    public PatientsResponse update(String id, PatientsRequest request) {
         throw new UnsupportedOperationException("Unimplemented method 'update'");
     }
 
@@ -131,12 +128,12 @@ public class EmployeeServiceImpl implements EmployeeService {
         throw new UnsupportedOperationException("Unimplemented method 'delete'");
     }
 
-    private Specification<EmployeeEntity> filterWithParams(Map<String, String> parameters) {
-        return new EmployeeSpecification().getSpecificationByFilters(parameters);
+    private PatientsResponse mapperDto(PatientsEntity source) {
+        return mapper.map(source, PatientsResponse.class);
     }
 
-    private EmployeeResponse mapperDto(EmployeeEntity source) {
-        return mapper.map(source, EmployeeResponse.class);
+    private Specification<PatientsEntity> filterWithParams(Map<String, String> params) {
+        return new PatientsSpecification().getSpecificationByFilters(params);
     }
 
     @SuppressWarnings("null")

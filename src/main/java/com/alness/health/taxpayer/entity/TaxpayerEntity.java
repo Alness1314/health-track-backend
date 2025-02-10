@@ -7,6 +7,7 @@ import java.util.UUID;
 import com.alness.health.address.entity.AddressEntity;
 import com.alness.health.company.entity.CompanyEntity;
 import com.alness.health.subsidiary.entity.SubsidiaryEntity;
+import com.alness.health.utils.TextEncrypterUtil;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -18,16 +19,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "taxpayer")
 @Getter
 @Setter
+@Slf4j
 public class TaxpayerEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -42,9 +46,7 @@ public class TaxpayerEntity {
 
     @Column(name = "type_person", nullable = false, columnDefinition = "character varying(12)")
     private String typePerson;
-
-    //@OneToOne
-    //@JoinColumn(name = "legal_representative_id", nullable = true)
+    
     @OneToOne(mappedBy = "taxpayer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private LegalRepresentativeEntity legalRepresentative;
 
@@ -81,5 +83,13 @@ public class TaxpayerEntity {
     @PreUpdate
     private void preUpdate(){
         setUpdateAt(LocalDateTime.now());
+    }
+
+    @PostLoad
+    private void decrypt(){
+        if(this.dataKey!=null){
+            this.rfc = TextEncrypterUtil.decrypt(rfc, dataKey);
+            this.corporateReasonOrNaturalPerson = TextEncrypterUtil.decrypt(corporateReasonOrNaturalPerson, dataKey);
+        }
     }
 }

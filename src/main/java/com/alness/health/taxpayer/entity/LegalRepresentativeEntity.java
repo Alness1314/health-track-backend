@@ -3,6 +3,7 @@ package com.alness.health.taxpayer.entity;
 import java.util.UUID;
 
 import com.alness.health.address.entity.AddressEntity;
+import com.alness.health.utils.TextEncrypterUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,17 +12,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
+import jakarta.persistence.PostLoad;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 @Entity
 @Table(name = "legal_representative")
 @Getter
 @Setter
 @NoArgsConstructor
+@Slf4j
 public class LegalRepresentativeEntity {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -51,6 +55,14 @@ public class LegalRepresentativeEntity {
     @PrePersist
     private void prePersist() {
         setErased(false);
+    }
+
+    @PostLoad
+    private void decrypt(){
+        if(this.dataKey!=null){
+            this.rfc = TextEncrypterUtil.decrypt(rfc, dataKey);
+            this.fullName = TextEncrypterUtil.decrypt(fullName, dataKey);
+        }
     }
 
 }

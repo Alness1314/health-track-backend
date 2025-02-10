@@ -10,6 +10,8 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.stereotype.Component;
 
+import com.alness.health.patients.dto.request.PatientsRequest;
+import com.alness.health.patients.entity.PatientsEntity;
 import com.alness.health.utils.DateTimeUtils;
 
 import jakarta.annotation.PostConstruct;
@@ -26,6 +28,7 @@ public class GenericMapper {
     public void init() {
         configureModelMapper();
         registerConverters();
+        registerMappings();
     }
 
     // Configuración general del ModelMapper
@@ -40,6 +43,15 @@ public class GenericMapper {
     private void registerConverters() {
         Converter<String, LocalDate> localDateConverter = createConverter(DateTimeUtils::parseToLocalDate);
         mapper.addConverter(localDateConverter);
+    }
+
+    // Método para registrar mapeos específicos
+    private void registerMappings() {
+        Converter<String, LocalDate> localDateConverter = createConverter(DateTimeUtils::parseToLocalDate);
+
+        mapper.createTypeMap(PatientsRequest.class, PatientsEntity.class)
+                .addMappings(m -> m.using(localDateConverter)
+                        .map(PatientsRequest::getBirthayDate, PatientsEntity::setBirthayDate));
     }
 
     

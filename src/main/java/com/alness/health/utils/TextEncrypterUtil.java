@@ -25,7 +25,8 @@ public class TextEncrypterUtil {
         throw new IllegalStateException("Utility class");
     }
 
-    public static String encrypt(String text, SecretKey key) {
+    public static String encrypt(String text, String keyString) {
+        SecretKey key = stringToKey(keyString);
         try {
             Cipher cipher = Cipher.getInstance(ALGORITHM);
 
@@ -50,7 +51,8 @@ public class TextEncrypterUtil {
         }
     }
 
-    public static String decrypt(String encryptedText, SecretKey key) {
+    public static String decrypt(String encryptedText, String keyString) {
+        SecretKey key = stringToKey(keyString);
         try {
             byte[] encryptedWithIv = Base64.getDecoder().decode(encryptedText);
 

@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -27,5 +28,6 @@ public class EmployeeRequest {
     private String nationality;
     private AddressRequest address;
     private UserRequest user;
+    private List<String> subidiary;
     private String imageId;
 }

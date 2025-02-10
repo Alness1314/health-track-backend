@@ -25,7 +25,6 @@ import com.alness.health.subsidiary.service.SubsidiaryService;
 import com.alness.health.subsidiary.specification.SubsidiarySpecification;
 import com.alness.health.taxpayer.entity.TaxpayerEntity;
 import com.alness.health.taxpayer.repository.TaxpayerRepository;
-import com.alness.health.utils.DecryptUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -106,10 +105,7 @@ public class SubsidiaryServiceImpl implements SubsidiaryService {
     }
 
     private SubsidiaryResponse mapperDto(SubsidiaryEntity source) {
-        SubsidiaryResponse response = mapper.map(source, SubsidiaryResponse.class);
-        DecryptUtil.decryptLegalRepLite(response.getTaxpayer().getLegalRepresentative(), source.getTaxpayer().getLegalRepresentative().getDataKey());
-        DecryptUtil.decryptTaxpayerLite(response.getTaxpayer(), source.getTaxpayer().getDataKey());
-        return response;
+       return mapper.map(source, SubsidiaryResponse.class);
     }
 
     private Specification<SubsidiaryEntity> filterWithParameters(Map<String, String> parameters) {
