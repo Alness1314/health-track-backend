@@ -21,7 +21,6 @@ public class SuppliersEntity {
     private String phone;
     private String email;
     private AddressEntity address;
-    private UserEntity user;
 
     @Column(name = "create_at", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime createAt;

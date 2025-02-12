@@ -8,7 +8,9 @@ import java.util.UUID;
 import com.alness.health.address.entity.AddressEntity;
 import com.alness.health.taxpayer.entity.TaxpayerEntity;
 import com.alness.health.employee.entity.EmployeeEntity;
+import com.alness.health.inventory.entity.InventoryEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +18,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
@@ -57,6 +60,9 @@ public class SubsidiaryEntity {
 
     @ManyToMany(mappedBy = "subsidiary")
     private List<EmployeeEntity> employee = new ArrayList<>();
+
+     @OneToMany(mappedBy = "subsidiary", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InventoryEntity> inventory;
 
     @Column(name = "create_at", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime createAt;
