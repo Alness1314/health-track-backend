@@ -33,12 +33,11 @@ public class OrderPurcharseEntity {
     @Column(nullable = false)
     private LocalDateTime orderDate;
     
+    @Column(nullable = false, columnDefinition = "character varying(128)")
     private String status;
 
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal total;
-
-    
 
     @Column(name = "create_at", nullable = false, columnDefinition = "timestamp without time zone")
     private LocalDateTime createAt;

@@ -2,12 +2,9 @@ package com.alness.health.inventory.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 import com.alness.health.subsidiary.entity.SubsidiaryEntity;
-import com.alness.health.suppliers.entity.SuppliersEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,12 +22,22 @@ public class InventoryEntity {
     @Column(name = "id", updatable = false, nullable = false, columnDefinition = "uuid")
     private UUID id;
 
+    @Column(nullable = false, columnDefinition = "character varying(64)")
     private String name;
+
+    @Column(nullable = false, columnDefinition = "character varying(512)")
     private String description;
+
+    @Column(nullable = false, columnDefinition = "character varying(64)")
     private String unit;
+
+    @Column(name = "min_stock", nullable = false, columnDefinition = "integer")
     private Integer minStock;
+
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
+
+    @Column(nullable = false, columnDefinition = "integer")
     private Integer quantity;
 
     @ManyToOne

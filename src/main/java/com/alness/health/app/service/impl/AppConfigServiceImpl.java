@@ -8,11 +8,17 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.alness.health.app.dto.JwtDto;
+import com.alness.health.app.dto.ResponseServer;
 import com.alness.health.app.service.AppConfigService;
+import com.alness.health.app.service.DecodeJwtService;
 import com.alness.health.app.service.JsonFileReaderService;
+import com.alness.health.auth.dto.KeyPrefix;
 import com.alness.health.cities.service.CityService;
 import com.alness.health.common.dto.ResponseDto;
 import com.alness.health.country.dto.request.CountryRequest;
@@ -26,6 +32,8 @@ import com.alness.health.states.service.StateService;
 import com.alness.health.users.dto.request.UserRequest;
 import com.alness.health.users.dto.response.UserResponse;
 import com.alness.health.users.service.UserService;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 public class AppConfigServiceImpl implements AppConfigService {
@@ -47,7 +55,13 @@ public class AppConfigServiceImpl implements AppConfigService {
     @Autowired
     private JsonFileReaderService jsonFileReaderService;
 
+    @Autowired
+    private DecodeJwtService jwtService;
+
     private static final String MEXICO = "México";
+
+    @Value("${sys.user.password}")
+    private String password;
 
     @Override
     public ResponseDto createDefaultCountries() {
@@ -146,7 +160,7 @@ public class AppConfigServiceImpl implements AppConfigService {
 
             UserRequest user = UserRequest.builder()
                     .username("master-admin@msn.com")
-                    .password("12345678#")
+                    .password(password)
                     .profiles(profiles)
                     .build();
 
@@ -155,6 +169,31 @@ public class AppConfigServiceImpl implements AppConfigService {
         return new ResponseDto("The user created",
                 HttpStatus.OK, true, null);
 
+    }
+
+    @Override
+    public ResponseServer checkStatusSession(HttpServletRequest request) {
+        String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if (header == null || !header.startsWith(KeyPrefix.PREFIX_TOKEN)) {
+            return new ResponseServer("Sesión no válida o expirada.", null, false, HttpStatus.UNAUTHORIZED);
+        }
+
+        String token = header.substring(KeyPrefix.PREFIX_TOKEN.length()).trim();
+
+        if (Boolean.FALSE.equals(jwtService.isValidToken(token))) {
+            return new ResponseServer("Sesión no válida o expirada.", null, false, HttpStatus.UNAUTHORIZED);
+        }
+
+        JwtDto jwtDto = jwtService.decodeJwt(token);
+        UserResponse user = userService.findByUsername(jwtDto.getBody().getSub());
+
+        if (user == null) {
+            return new ResponseServer("El usuario no fue encontrado.", Map.of(), false, HttpStatus.NOT_FOUND);
+        }
+        Map<String, Object> data = Map.of("id", user.getId(), "username", user.getUsername(), "token", token);
+
+        return new ResponseServer("Sesión válida.", data, true, HttpStatus.ACCEPTED);
     }
 
 }

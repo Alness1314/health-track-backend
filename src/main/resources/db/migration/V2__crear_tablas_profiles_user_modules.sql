@@ -1,6 +1,6 @@
 CREATE TABLE profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    name VARCHAR(64) NOT NULL UNIQUE,
+    "name" VARCHAR(64) NOT NULL UNIQUE,
     erased BOOLEAN NOT NULL DEFAULT FALSE,
     created TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now(),
     updated TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT now()
@@ -11,6 +11,8 @@ CREATE TABLE modules (
     name VARCHAR(255) NOT NULL UNIQUE,
     route VARCHAR(255) NOT NULL,
     icon_name VARCHAR(255),
+    "level" varchar(255) NULL,
+	"description" varchar(255) NULL,
     erased BOOLEAN NOT NULL DEFAULT FALSE,
     is_parent BOOLEAN NOT NULL,
     parent_id UUID,

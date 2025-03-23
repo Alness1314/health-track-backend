@@ -1,6 +1,4 @@
-package com.alness.health.modules.dto.request;
-
-import java.util.List;
+package com.alness.health.modules.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +11,13 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ModuleRequest {
+public class ModuleDto {
+    private String id;
     private String name;
     private String route;
     private String iconName;
     private String level;
     private String description;
+    private Boolean erased;
     private Boolean isParent;
-    private List<String> profile;
 }

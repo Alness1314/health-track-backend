@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alness.health.app.dto.ResponseServer;
+import com.alness.health.modules.dto.ModuleDto;
 import com.alness.health.modules.dto.request.ModuleRequest;
 import com.alness.health.modules.dto.response.ModuleResponse;
 import com.alness.health.modules.service.ModuleService;
@@ -30,7 +32,7 @@ public class ModulesController {
 
     @GetMapping
     public ResponseEntity<List<ModuleResponse>> findAll(@RequestParam Map<String, String> param) {
-        List<ModuleResponse> response = moduleService.getAllModules();
+        List<ModuleResponse> response = moduleService.getAllModules(param);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -43,13 +45,25 @@ public class ModulesController {
     @PostMapping
     public ResponseEntity<ModuleResponse> create(@RequestBody ModuleRequest request) {
         ModuleResponse response = moduleService.createModule(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/all")
+    public ResponseEntity<ResponseServer> createAll(@RequestBody List<ModuleRequest> request) {
+        ResponseServer response = moduleService.multiSave(request);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @PatchMapping()
     public ResponseEntity<ModuleResponse> asignmodule(@RequestParam String parentModuleId,
             @RequestParam String childModuleId) {
         ModuleResponse response = moduleService.assignChildToParent(parentModuleId, childModuleId);
+        return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity<List<ModuleDto>> find(@RequestParam Map<String, String> param) {
+        List<ModuleDto> response = moduleService.find(param);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

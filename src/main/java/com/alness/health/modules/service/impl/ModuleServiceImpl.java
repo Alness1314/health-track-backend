@@ -1,20 +1,26 @@
 package com.alness.health.modules.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.alness.health.app.dto.ResponseServer;
 import com.alness.health.common.dto.ResponseDto;
 import com.alness.health.config.GenericMapper;
+import com.alness.health.modules.dto.ModuleDto;
 import com.alness.health.modules.dto.request.ModuleRequest;
 import com.alness.health.modules.dto.response.ModuleResponse;
 import com.alness.health.modules.entity.ModuleEntity;
 import com.alness.health.modules.repository.ModuleRepository;
 import com.alness.health.modules.service.ModuleService;
+import com.alness.health.modules.specification.ModuleSpecification;
 import com.alness.health.profiles.entity.ProfileEntity;
 import com.alness.health.profiles.repository.ProfileRepository;
 
@@ -74,8 +80,8 @@ public class ModuleServiceImpl implements ModuleService {
     }
 
     @Override
-    public List<ModuleResponse> getAllModules() {
-        return moduleRepository.findAll().stream()
+    public List<ModuleResponse> getAllModules(Map<String, String> params) {
+        return moduleRepository.findAll(filterWithParameters(params)).stream()
                 .filter(module -> module.getParent() == null) // Excluir los módulos asignados a un padre
                 .map(this::convertToDto).toList();
     }
@@ -108,10 +114,41 @@ public class ModuleServiceImpl implements ModuleService {
                 .name(module.getName())
                 .route(module.getRoute())
                 .iconName(module.getIconName())
+                .description(module.getDescription())
+                .level(module.getLevel())
                 .isParent(module.getIsParent())
                 .erased(module.getErased())
                 .children(module.getChildren().stream().map(this::convertToDto).toList())
                 .build();
+    }
+
+    @Override
+    public ResponseServer multiSave(List<ModuleRequest> modules) {
+        List<Map<String, Object>> response = new ArrayList<>();
+        modules.forEach(item -> {
+            ModuleResponse resp = createModule(item);
+            if (resp != null) {
+                response.add(Map.of("module", resp.getName(), "status", true));
+            } else {
+                response.add(Map.of("module", item.getName(), "status", false));
+            }
+        });
+        return new ResponseServer("Modulos creados", Map.of("data", response), true, HttpStatus.ACCEPTED);
+    }
+
+    @Override
+    public List<ModuleDto> find(Map<String, String> params) {
+        return moduleRepository.findAll(filterWithParameters(params))
+                .stream().map(this::mapperModules)
+                .toList();
+    }
+
+    public ModuleDto mapperModules(ModuleEntity module) {
+        return mapper.map(module, ModuleDto.class);
+    }
+
+    public Specification<ModuleEntity> filterWithParameters(Map<String, String> parameters) {
+        return new ModuleSpecification().getSpecificationByFilters(parameters);
     }
 
 }
