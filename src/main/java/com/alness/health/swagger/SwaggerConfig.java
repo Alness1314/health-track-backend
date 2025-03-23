@@ -22,6 +22,7 @@ public class SwaggerConfig {
 		return new OpenAPI()
 				.info(getInfo())
 				.addServersItem(new Server().url("http://localhost:8080").description("Development Server"))
+				.addServersItem(new Server().url("https://health-track-backend-production.up.railway.app").description("Prod Server"))
 				.components(createComponents())
 				.addSecurityItem(new SecurityRequirement().addList(SCHEME_NAME));
 	}
